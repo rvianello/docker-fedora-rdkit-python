@@ -1,7 +1,7 @@
 ARG fedora_release=31
 FROM docker.io/fedora:${fedora_release} AS builder
 ARG rdkit_git_url=https://github.com/rdkit/rdkit.git
-ARG rdkit_git_ref=Release_2020_03_1b1
+ARG rdkit_git_ref=Release_2020_03_1
 
 RUN dnf install -y \
     boost-devel \
