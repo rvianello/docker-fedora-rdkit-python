@@ -1,7 +1,7 @@
-ARG fedora_release=32
+ARG fedora_release=33
 FROM docker.io/fedora:${fedora_release} AS builder
 ARG rdkit_git_url=https://github.com/rdkit/rdkit.git
-ARG rdkit_git_ref=Release_2020_09_1
+ARG rdkit_git_ref=Release_2020_09_2
 
 RUN dnf install -y \
     boost-devel \
@@ -17,7 +17,8 @@ RUN dnf install -y \
     python3-numpy \
     python3-pandas \
     python3-pillow \
-    zlib-devel
+    zlib-devel \
+  && dnf clean all
 
 WORKDIR /opt/RDKit-build
 
@@ -52,7 +53,7 @@ RUN RDBASE="$PWD" LD_LIBRARY_PATH="$PWD/lib" PYTHONPATH="$PWD" ctest -j4 --outpu
 RUN make install DESTDIR=/opt/RDKit-build/stage
 
 
-ARG fedora_release=32
+ARG fedora_release=33
 FROM docker.io/fedora:${fedora_release}
 
 RUN dnf install -y \
@@ -64,7 +65,8 @@ RUN dnf install -y \
     cairo \
     python3 \
     python3-numpy \
-    zlib
+    zlib \
+  && dnf clean all
 
 COPY --from=builder /opt/RDKit-build/stage/usr /usr
 
