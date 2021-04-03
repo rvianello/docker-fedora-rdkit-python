@@ -1,7 +1,7 @@
 ARG fedora_release=33
 FROM docker.io/fedora:${fedora_release} AS builder
 ARG rdkit_git_url=https://github.com/rdkit/rdkit.git
-ARG rdkit_git_ref=Release_2021_03_1b1
+ARG rdkit_git_ref=Release_2021_03_1
 
 RUN dnf install -y \
     boost-devel \
@@ -30,7 +30,6 @@ RUN git checkout ${rdkit_git_ref}
 
 RUN cmake \
     -D CATCH_DIR=/usr/include/catch2 \
-    -D RDK_BUILD_COMPRESSED_SUPPLIERS=ON \
     -D RDK_BUILD_CAIRO_SUPPORT=ON \
     -D RDK_BUILD_INCHI_SUPPORT=ON \
     -D RDK_BUILD_AVALON_SUPPORT=ON \
