@@ -1,7 +1,7 @@
-ARG fedora_release=35
-FROM docker.io/fedora:${fedora_release} AS builder
+ARG fedora_release=39
+FROM docker.io/library/fedora:${fedora_release} AS builder
 ARG rdkit_git_url=https://github.com/rdkit/rdkit.git
-ARG rdkit_git_ref=Release_2022_03_2
+ARG rdkit_git_ref=Release_2024_03_1
 
 RUN dnf install -y \
     boost-devel \
@@ -17,6 +17,7 @@ RUN dnf install -y \
     python3-numpy \
     python3-pandas \
     python3-pillow \
+    python3-pytest \
     zlib-devel \
   && dnf clean all
 
@@ -36,9 +37,10 @@ RUN cmake \
     -D RDK_BUILD_DESCRIPTORS3D=ON \
     -D RDK_BUILD_FREESASA_SUPPORT=ON \
     -D RDK_BUILD_COORDGEN_SUPPORT=ON \
+    -D RDK_BUILD_MAEPARSER_SUPPORT=ON \
     -D RDK_BUILD_MOLINTERCHANGE_SUPPORT=ON \
     -D RDK_BUILD_YAEHMOP_SUPPORT=ON \
-    -D RDK_BUILD_STRUCTCHECKER_SUPPORT=ON \
+    -D RDK_BUILD_STRUCTCHECKER_SUPPORT=OFF \
     -D RDK_USE_URF=ON \
     -D RDK_INSTALL_INTREE=OFF \
     -D RDK_INSTALL_STATIC_LIBS=OFF \
@@ -48,12 +50,12 @@ RUN cmake \
     . 
   
 RUN make -j4
-RUN RDBASE="$PWD" LD_LIBRARY_PATH="$PWD/lib" PYTHONPATH="$PWD" ctest -j4 --output-on-failure
+RUN RDBASE="$PWD" LD_LIBRARY_PATH="$PWD/lib" PYTHONPATH="$PWD" ctest --output-on-failure
 RUN make install DESTDIR=/opt/RDKit-build/stage
 
 
-ARG fedora_release=35
-FROM docker.io/fedora:${fedora_release}
+ARG fedora_release=39
+FROM docker.io/library/fedora:${fedora_release}
 
 RUN dnf install -y \
     boost-iostreams \
